@@ -1,0 +1,132 @@
+#image-banner {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+
+}
+
+.empty-items {
+	background-color: #f6f7f8;
+	border-radius: 1rem;
+	border: 1px solid #999999;
+	box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+	font-size: 1.3rem;
+	margin-left: 15%;
+	margin-top: 2.5%;
+	padding: 2rem;
+	width: 70%;
+}
+
+.store-banner {
+	font-family: Arial, sans-serif;
+	color: white;
+	font-size: 50px;
+	padding: 30px;
+}
+
+.store-banner .store-image {
+	background-color: transparent;
+	border-radius: 2rem 2rem 0 0;
+	font-weight: bold;
+	height: 150px;
+	margin-right: 1rem;
+	width: 150px;
+}
+
+.horizontal-display {
+	backdrop-filter: blur(15px);
+	background-color: rgba(0, 0, 0, 0.35);
+	border-radius: 0 0.5rem 0.5rem 0.5rem;
+	display: grid;
+	grid-template-columns: auto auto auto;
+	padding: 1rem;
+}
+
+.store-banner .store-stars {
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 20px;
+	margin-left: 15px;
+	font-weight: bolder;
+}
+
+.store-banner .store-description {
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 20px;
+	margin-left: 30%;
+}
+
+.store-banner .store-webpage {
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 20px;
+	margin-left: 30%;
+}
+
+.products-div {
+	margin-top: 3%;
+	margin-left: 8%;
+	margin-right: 8%;
+}
+
+.products-div .products-banner {
+	background-color: #b19cd9;
+	border-radius: 0.5rem;
+}
+
+.products-div .products-banner .recomended-banner {
+	background-color: plum;
+	margin-right: 80%;
+}
+
+.products-div .products-banner .recomended-banner .recommended-text {
+	margin-left: 30px;
+	font-size: 30px;
+	color: white;
+}
+
+.products-div .products-container {
+	display: grid;
+	grid-template-columns: 250px 250px 250px 250px;
+	align-content: center;
+	grid-gap: 50px 80px;
+	margin-bottom: 10%;
+}
+
+@media screen and (max-width: 1350px) {
+	.products-div .products-container {
+		grid-template-columns: auto auto auto;
+	}
+}
+
+@media screen and (max-width: 900px) {
+	.products-div .products-container {
+		grid-template-columns: auto auto;
+	}
+}
+
+.products-div .products-container .product {
+	border-radius: 1rem;
+	display: grid;
+	font-size: 20px;
+	margin-top: 10%;
+}
+
+.products-div .products-container .product:hover {
+	box-shadow: 2px 2px 6px gray;
+}
+
+.products-div .products-container .product .product-image {
+	width: 200px;
+	height: 200px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+}
+
+.products-div .products-container .product .product-name {
+	text-align: center;
+}
+
+.products-div .products-container .product .product-price {
+	text-align: center;
+}

@@ -1,0 +1,122 @@
+{% extends 'root.html' %}
+{% load static %}
+
+{% block title %}
+    Bazar - Tienda
+{% endblock %}
+
+{% block static-files %}
+
+    {% comment %} Import module libraries {% endcomment %}
+    <link rel="stylesheet" type="text/css" href="{% static '/stores/store.css' %}" media="screen">
+
+    <script src="{% static 'stores/store.js' %}"></script>
+
+    {% comment %} Import components templates {% endcomment %}
+    {% include 'components/header.html' with type='head' %}
+    {% include 'components/footer.html' with type='head' %}
+
+{% endblock %}
+
+{% block body %}
+    {% include 'components/header.html' with type='body' %}
+
+    <div id="contents" style="padding: 0 !important;">
+        <div class="store-banner">
+            <div class=""><img class="store-image" src="{% static 'media/examples/tienda.png' %}"
+                               alt="Imagen de Tienda"/>
+                {{ store.brand_name }}
+            </div>
+            <script>
+                let $store_img = '{{ store.store_image_profile }}';
+                if (File.isFileImageExtension($store_img)) {
+                    $('.store-image').attr('src', $store_img);
+                }
+            </script>
+            <div class="horizontal-display">
+                <div class="store-stars">{{ store.stars }} <i class="fas fa-star"></i></div>
+                <div class="store-description">{{ store.long_description }}</div>
+                <div class="store-webpage"><a href="{{ store.website }}">{{ store.website }}</a></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="products" class="products-div">
+        <div class="products-banner">
+            <div class="recomended-banner">
+                <div class="recommended-text">Recomendados</div>
+            </div>
+        </div>
+        <div class="products-container">
+            {% for p in store_inventory %}
+                <div class="product" id="product_{{ p.id }}">
+                    <img class="product-image" src="{% static 'media/examples/caja.png' %}" alt="Imagen de Tienda"/>
+                    <div class="product-name">{{ p.product_name }}</div>
+                    <div class="product-price">{{ p.price }}$</div>
+                    <button data-name="{{ p.product_name }}" data-price="{{ p.price }}"
+                            class="btn btn-outline-secondary add-btn update-cart"
+                            style="border-radius: 1rem;">
+                        Agregar al carro
+                    </button>
+                </div>
+            {% empty %}
+                </div>
+                <div class="empty-items">
+                    Ups! Esta tienda no tiene items para vender <i class="far fa-sad-tear"></i>
+                    <script>
+                        $('.products-container').hide();
+                    </script>
+                </div>
+            {% endfor %}
+        <script>
+            /*
+            Establece las imágenes
+             */
+            let imgs = [
+                {% for p in store_inventory %}
+                    '{{ p.product_image }}',
+                {% endfor %}
+            ];
+            let ids = [
+                {% for p in store_inventory %}
+                    '#product_{{ p.id }}',
+                {% endfor %}
+            ];
+            for (let $i = 0; $i < imgs.length; $i++) {
+                if (File.isFileImageExtension(imgs[$i])) {
+                    $(ids[$i] + ' .product-image').attr('src', imgs[$i]);
+                }
+            }
+
+            /*
+            Establece botón para añadir al carro
+             */
+            for (let $i = 0; $i < imgs.length; $i++) {
+                $(ids[$i] + ' button').on('click', function () {
+                    let $product = $(this);
+                    let $name = $product.attr('data-name');
+                    let $id = generateID();
+                    app_dialog.form('Elija cantidad para {0}'.format($name),
+                        '<input class="form-control" id="{0}" type="number" value="1" min="1" />'.format($id),
+                        function () {
+                            let $total = $('#{0}'.format($id)).val();
+                            for (let $j = 0; $j < $total; $j++) {
+                                app_cart.add_item($name, $product.attr('data-price'), imgs[$i], {{ store_index }});
+                            }
+                            app_cart.save();
+                            app_dialog.success(
+                                'Producto añadido!',
+                                'Producto añadido al carro de manera satisfactoria.', {});
+                        }, null,
+                        {
+                            submitText: 'Añadir al carrito'
+                        });
+                });
+            }
+        </script>
+        </div>
+    </div>
+
+    <!-- <div id="search-results-bg"></div> -->
+    {% include 'components/footer.html' with type='body' %}
+{% endblock %}

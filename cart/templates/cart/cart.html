@@ -1,0 +1,171 @@
+{% extends 'root.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+    Carro de Compras
+{% endblock %}
+
+{% block static-files %}
+
+    {% comment %} Import module libraries {% endcomment %}
+    <!--suppress HtmlFormInputWithoutLabel -->
+    <link rel="stylesheet" type="text/css" href="{% static 'cart.css' %}" media="screen">
+    <link rel="stylesheet" type="text/css" href="{% static 'ccviewer/card.css' %}" media="screen">
+
+    <script src="{% static 'cart.js' %}"></script>
+    <script src="{% static 'ccviewer/jquery.card.js' %}"></script>
+
+    {% comment %} Import components templates {% endcomment %}
+    {% include 'components/header.html' with type='head' %}
+    {% include 'components/footer.html' with type='head' %}
+
+{% endblock %}
+
+{% block body %}
+    {% include 'components/header.html' with type='body' %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div id="contents">
+            <div class="row no-margin">
+                <div class="col-3" id="menu-left-container">
+                    <div class="menu-left-table">
+                        <div class="menu-centered">
+                            <div id="profile-menu">
+                                <div class="menu-header">
+                                    <div class="menu-header-image">
+                                        <img src="{% static 'media/examples/user-image.jpeg' %}"
+                                             alt="Avatar de Usuario"/>
+                                    </div>
+                                    <div class="menu-header-title name-full">
+                                        {{ user.first_name }} {{ user.last_name }}
+                                    </div>
+                                    <div class="menu-header-title name-abbv">
+                                        Nombre C.
+                                    </div>
+                                </div>
+                                <div class="menu-options">
+                                    <a href="http://127.0.0.1:8000/uprofile">
+                                        <div class="menu-item item-active">
+                                            <i class="fas fa-info-circle"></i> <span>Información principal</span>
+                                        </div>
+                                    </a>
+                                    <div class="menu-item">
+                                        <i class="fas fa-database"></i> <span>Datos adicionales</span>
+                                    </div>
+                                    <div class="menu-item">
+                                        <i class="fas fa-shopping-cart"></i> <span>Mis Compras</span>
+                                    </div>
+                                    <a href="http://127.0.0.1:8000/ustores">
+                                        <div class="menu-item item-active">
+                                            <i class="fas fa-store"></i> <span>Mis Tiendas</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-9" id="profile-contents">
+                    <div class="profile-group">
+                        <div class="profile-title"><i class="fas fa-shopping-cart"></i> Carro de Compra</div>
+
+                        <div class="col-lg-12">
+                            <div class="box-element">
+
+                                <a href="http://127.0.0.1:8000/home"
+                                   class="btn btn-outline-dark">
+                                    &#x2190; Seguir comprando</a>
+
+                                <a id="wipe_cart" class="btn btn-outline-danger"
+                                   style="margin-left: 0.5rem;">Borrar carrito</a>
+                                <script>
+                                    $('#wipe_cart').on('click', function () {
+                                        app_cart.clear();
+                                        app_url.reload();
+                                    });
+                                </script>
+
+                                <br>
+                                <br>
+                                <table class="table">
+                                    <tr>
+                                        <th><h5>Items: <strong id="cart_total"></strong></h5></th>
+                                        <th><h5>Total: <strong id="cart_value"></strong></h5></th>
+                                        <th>
+                                            <a style="float:right; margin:5px;" class="btn btn-success"
+                                               id="checkout_button">Checkout</a>
+                                        </th>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                            <br>
+                            <div class="box-element" id="cart-items">
+                                <div class="cart-row">
+                                    <div style="flex:2"><strong>Item</strong></div>
+                                    <div style="flex:1"><strong>Cantidad</strong></div>
+                                    <div style="flex:1"><strong>Precio</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            $(function () {
+                                app_cart.cart_init();
+                            });
+                            $('#checkout_button').on('click', function () {
+                                let $cardid = generateID();
+                                let $total = $('#cart_value').html();
+                                app_dialog.form('Checkout',
+                                    `
+                                <div class="cart-summary"></div>
+                                <br>
+                                <div class="card-wrapper"></div>
+                                <br>
+                                <div class="form-container active">
+                                  <form action="" id="${$cardid}">
+                                    <input placeholder="Nº de la tarjeta" type="tel" name="number" class="form-control unknown jp-card-invalid" maxlength="19">
+                                    <input placeholder="Nombre completo" type="text" name="name" class="form-control jp-card-invalid">
+                                    <input placeholder="MM/YY" type="tel" name="expiry" class="form-control jp-card-valid" style="width: 50%; display:inline-block" maxlength="7">
+                                    <input placeholder="CV" type="number" name="cvc" class="form-control jp-card-valid" style="width: 50%; float: left;" max="999" min="0">
+                                  </form>
+                                </div>
+                                `,
+                                    function () {
+                                        app_cart.clear();
+                                        app_dialog.success('Pago aprobado', 'Que disfrutes');
+                                        setTimeout(function () {
+                                            window.location.href = 'http://127.0.0.1:8000/home/';
+                                        }, 5000);
+                                    },
+                                    null,
+                                    {
+                                        size: app_dialog.options.size.LARGE,
+                                        submitText: 'Pagar'
+                                    }
+                                );
+                                setTimeout(function () {
+                                    $('#' + $cardid).card({
+                                        container: '.card-wrapper',
+                                        placeholders: {
+                                            name: 'Nombre Apellido'
+                                        }
+                                    });
+                                    $('.cart-summary').html(`
+                                    Ingrese su CC para pagar el total de $${$total}.
+                                    La boleta electrónica será enviada a su correo <i>{{ user.email }}</i>
+                                    `);
+                                }, 200);
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    {% include 'components/footer.html' with type='body' %}
+{% endblock %}
